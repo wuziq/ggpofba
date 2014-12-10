@@ -1,0 +1,117 @@
+CONTENTS
+
+ 0 About this document
+ 1 Requirements for compiling
+ 2 Additional setup
+ 3 Installing the FBA sources
+ 4 Compiling FBA
+
+
+
+
+0 - ABOUT THIS DOCUMENT
+
+The information contained herein is just to get you started. It is not intended
+to be an exhaustive reference, but should contain enough information to allow
+you to set up your C/C++ programming environment and compile FBA.
+
+
+
+
+1 - REQUIREMENTS FOR COMPILING
+
+To compile FB Alpha with the free Microsoft Visual C++ Toolkit 2003, you will
+need to download and install the Platform SDK, the DirectX 9 SDK, and finally
+the toolkit itself.
+
+Platform SDK <http://www.microsoft.com/msdownload/platformsdk/sdkupdate/>
+DirectX SDK <http://www.microsoft.com/downloads/details.aspx?FamilyID=b7bc31fa-2df1-44fd-95a4-c2555446aed4&DisplayLang=en>
+Toolkit <http://msdn.microsoft.com/visualc/vctoolkit2003/>
+
+In addition to the above, you will need to have a version of Gnu make, nasm,
+and Perl. You can either install Cygwin from <http://www.cygwin.com/>, which
+takes care of all three, or
+get Gnu make from MinGW at <http://sourceforge.net/projects/mingw/>,
+get nasm rom <http://nasm.sourceforge.net/> (put nasmw.exe in your path), and
+get ActivePerl from <http://www.activestate.com/Products/ActivePerl/>.
+
+
+
+
+2 - ADDITIONAL SETUP
+
+The Visual C++ Toolkit is missing cvtres.exe; however, it is included in the
+platform SDK in the %MSSDK%\bin\win64\ directory. Simply copy cvtres.exe to the
+%VCToolkitInstallDir%\bin directory.
+
+To set up your environment, you can use a .bat/.cmd file as below:
+
+8<--------8<--------8<--------8<--------8<--------8<--------8<--------8<--------
+
+@echo off
+@set cpu=i386
+
+call "<your Microsoft SDK install directory>\SetEnv.bat" /XP32 /RETAIL
+call "%DXSDK_DIR%\Utilities\Dx_Setenv.cmd"
+echo.
+call "%VCToolkitInstallDir%\vcvars32.bat"
+
+8<--------8<--------8<--------8<--------8<--------8<--------8<--------8<--------
+
+You will need zblib and libpng; place the static libraries in <src/vc/lib> and
+place the headers in <src/vc/include>. You can find a pre-compiled version of
+zlib here: <http://www.winimage.com/zLibDll/>.
+
+You can use the following makefile to build libpng yourself (place the the zlib
+headers in a subdirectory named "zlib").
+
+8<--------8<--------8<--------8<--------8<--------8<--------8<--------8<--------
+
+# Basic makefile to build static libpng with Microsoft Visual C++ 2003 Toolkit
+
+# Uncomment to use x86 assembly optimisations
+# PNG_USE_PNGVCRD = 1
+
+CC =		cl
+LD =		link
+
+CFLAGS =	/nologo /W3 /O1 /D "WIN32" /D "NDEBUG" /D "_LIB" /FD /c /DZLIB_WINAPI /I "zlib"
+LDFLAGS =	/LIB
+
+obj =		png.obj pngerror.obj pngget.obj pngmem.obj pngpread.obj pngread.obj \
+			pngrio.obj pngrtran.obj pngrutil.obj pngset.obj pngtrans.obj \
+			pngwio.obj pngwrite.obj pngwtran.obj pngwutil.obj
+
+ifdef PNG_USE_PNGVCRD
+CFLAGS +=	/D "PNG_USE_PNGVCRD"
+obj +=		pngvcrd.obj
+endif
+
+
+
+libpng.lib:	$(obj)
+			$(LD) $(LDFLAGS) /OUT:libpng.lib $(obj)
+
+%.obj:		%.c
+			$(CC) $(CFLAGS) $<
+
+8<--------8<--------8<--------8<--------8<--------8<--------8<--------8<--------
+
+
+
+
+3 - INSTALLING THE FBA SOURCES
+
+To install the FBA sources, simply unzip them to the directory where you want
+them to live.
+
+
+
+
+4 - COMPILING THE FBA SOURCES
+
+To compile the FBA sources, change to the root directory of FBA, one level below
+where this file is located, and type <make vc>.  The executable will be also be
+placed in this directory, while all intermediate files are placed in the obj
+subdirectory.
+

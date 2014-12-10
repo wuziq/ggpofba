@@ -1,0 +1,632 @@
+# Makefile for FBA, for use with GNU make & GCC (Cygwin/MinGW)
+#
+# The first pass makes sure all intermediary targets are present. The second pass updates
+# any targets, if necessary. (Intermediary) targets which have their own unique rules
+# are generated as required.
+
+unexport
+
+#
+#	Flags. Uncomment any of these declarations to enable their function.
+#
+
+# Check for changes in header files
+DEPEND = 1
+
+
+
+#
+#	Declare variables
+#
+
+# Specify the name of the executable file, without ".exe"
+NAME = fba
+
+
+ifndef	CPUTYPE
+	CPUTYPE	= i686
+endif
+
+MMX	= 1
+
+ifdef	DEBUG
+	NAME := $(NAME)d
+endif
+ifdef	SYMBOL
+	NAME := $(NAME)s
+endif
+ifndef UNICODE
+	NAME := $(NAME)a
+endif
+
+ifeq	($(CPUTYPE),i686)
+	ppro = ppro
+else
+	NAME := $(NAME)$(CPUTYPE)
+endif
+
+
+
+#
+#	Specify paths/files
+#
+
+objdir	= obj/GNU_WIN32/$(NAME)/
+srcdir	= src/
+
+alldir	= burn burn/capcom burn/toaplan burn/cave burn/psikyo burn/neogeo burn/sega burn/misc burn/misc/taito_68k burner burner/win32 interface interface/win32 interface/sdl cpu/doze cpu/a68k cpu/m68k kaillera/client generated
+
+incdir	= $(foreach dir,$(alldir),-I$(srcdir)$(dir)) -I$(objdir)generated -I$(srcdir)mingw/include -I-
+
+ifdef UNICODE
+# lib	= -lunicows
+endif
+
+# lib	+=	`sdl-config --libs`
+lib	+=	-luser32 -lgdi32 -lcomdlg32 -lcomctl32 -lshell32 -lwinmm \
+		-ladvapi32 -lsetupapi -ldxguid -lddraw -ldsound -ldinput \
+		-lz -lpng $(srcdir)/kaillera/client/kailleraclient.lib \
+		
+drvobj	=   d_neogeo.o \
+		\
+	    dc_1941.o dc_3wonders.o dc_captcomm.o dc_cawing.o dc_dino.o  dc_dw.o \
+		dc_ffight.o dc_forgottn.o dc_ghouls.o dc_knights.o dc_kod.o dc_megaman.o \
+		dc_mercs.o dc_msword.o dc_mtwins.o dc_nemo.o dc_pang3.o dc_pnickj.o \
+		dc_punisher.o dc_qad.o dc_qtono2.o dc_sf2.o dc_sf2t.o dc_sfzch.o \
+		dc_slammast.o dc_strider.o dc_unsquad.o dc_varth.o dc_willow.o dc_wof.o \
+	    dc_1944.o dc_19xx.o dc_armwar.o dc_avsp.o dc_batcir.o dc_choko.o dc_csclub.o \
+		dc_cworld2j.o dc_cyb.o dc_ddsom.o dc_ddtod.o dc_dimahoo.o dc_dstlk.o \
+		dc_ecofghtr.o dc_gigawing.o dc_hsf2.o dc_jyangoku.o dc_megaman2.o dc_mmatrix.o dc_mpang.o dc_msh.o \
+		dc_mshvsf.o dc_mvsc.o dc_nwarr.o dc_progear.o dc_pzloop2.o dc_qnd.o dc_ringdest.o dc_sfa.o \
+		dc_sfa2.o dc_sfa3.o dc_sgemf.o dc_spf.o dc_ssf2.o dc_ssf2t.o dc_vhunt2.o \
+		dc_vsav.o dc_vsav2.o dc_xmcota.o dc_xmvsf.o \
+		\
+	    d_tekipaki.o d_dogyuun.o d_truxton2.o d_vfive.o d_kbash.o d_batsugun.o \
+		d_snowbro2.o d_mahoudai.o d_shippumd.o d_battleg.o d_batrider.o d_bbakraid.o \
+		\
+	    d_hellfire.o d_outzone.o d_truxton.o d_zerowing.o \
+		\
+	    d_sailormn.o d_gaia.o \
+	    d_donpachi.o d_dodonpachi.o d_feversos.o d_esprade.o d_uopoko.o d_guwange.o \
+		\
+	    d_rainbow.o d_opwolf.o d_rastan.o d_twinhawk.o d_superman.o \
+		\
+	    d_psikyo.o \
+		\
+	    d_sys16a.o d_sys16b.o d_hangon.o d_outrun.o d_xbrd.o d_ybrd.o \
+	        \
+	    d_tigerheli.o d_news.o d_ohmygod.o d_solomon.o d_prehisle.o d_hyperpac.o \
+	    d_wc90.o d_fstarfrc.o d_bombjack.o d_biomtoy.o d_tmnt.o d_madgear.o
+
+depobj	:= main.o splash.o about.o systeminfo.o debugger.o misc_win32.o \
+	   sel.o media.o drv.o load.o run.o progress.o \
+	   popup_win32.o scrn.o menu.o replay.o dynhuff.o memcard.o wave.o \
+	   inpc.o inpd.o inps.o inpcheat.o inpdipsw.o sfactd.o stated.o numdial.o res.o \
+	   cona.o localise.o fba_kaillera.o roms.o \
+	   \
+	   resource.o \
+	   \
+	   misc.o bzip.o unzip.o zipfn.o state.o statec.o sshot.o dat.o \
+	   cong.o conc.o gamc.o gami.o \
+	   \
+	   $(drvobj) \
+	   \
+	   burn.o cheat.o \
+	   sek.o zet.o doze.o eeprom_93cxx.o \
+	   burn_sound.o burn_sound_c.o timer.o \
+	   burn_ym2151.o burn_ym3812.o burn_ym2608.o burn_ym2610.o burn_ymf278b.o burn_ym2203.o \
+	   ay8910.o ym2151.o fm.o fmopl.o ymdeltat.o msm5205.o msm6295.o ymf278b.o ymz280b.o \
+	   \
+	   interface.o \
+	   vid_interface.o vid_support.o vid_softfx.o \
+	   vid_directx_support.o vid_d3d.o vid_ddraw.o vid_ddrawfx.o \
+	   aud_interface.o aud_dsp.o lowpass2.o aud_dsound3.o \
+	   inp_interface.o inp_dinput.o \
+	   prf_interface.o prf_performance_counter.o \
+	   \
+	   neogeo.o neo_run.o neo_decrypt.o neo_text.o neo_sprite.o neo_palette.o neo_upd4990a.o \
+	   \
+	   cps.o cps_draw.o cps_mem.o cps_obj.o cps_pal.o cps_run.o \
+	   cps2_crpt.o cps_rw.o cps_scr.o cpsr.o cpsrd.o dc_input.o \
+	   cpst.o ctv.o ps.o ps_m.o ps_z.o qs.o qs_c.o qs_z.o \
+	   kabuki.o \
+	   \
+	   toaplan.o toa_gp9001.o toa_extratext.o toa_palette.o \
+	   toa_bcu2.o toaplan1.o \
+	   \
+	   cave.o cave_tile.o cave_sprite.o cave_palette.o \
+	   \
+	   rain_chip.o taito_gfx.o vid_sysx.o vid_pc080sn.o vid_pc090oj.o snd_tc0140.o \
+	   \
+	   psikyo_tile.o psikyo_sprite.o psikyo_palette.o \
+	   \
+	   sys16_run.o sys16_gfx.o sys16_fd1094.o fd1089.o fd1094.o mc8123.o sys16_pcm.o sys16_ppi.o \
+	   \
+	   tiles_generic.o
+
+ifdef	DEBUG
+depobj += m68kdasm.o
+endif
+
+autobj += $(depobj) burn_sound_a.o eagle_fm.o 2xsaimmx.o hq2x32.o hq3x32.o hq4x32.o
+
+autdep	= $(depobj:.o=.d)
+
+a68k.o	= $(objdir)cpu/a68k/a68k.o
+
+dozea.o	= $(objdir)cpu/doze/dozea.o
+
+app_gnuc.rc = $(srcdir)generated/app_gnuc.rc
+license.rtf = $(srcdir)generated/license.rtf
+driverlist.h = $(srcdir)generated/driverlist.h
+ctv.h	= $(srcdir)generated/ctv.h
+toa_gp9001_func.h = $(srcdir)generated/toa_gp9001_func.h
+neo_sprite_func.h = $(srcdir)generated/neo_sprite_func.h
+cave_tile_func.h = $(srcdir)generated/cave_tile_func.h
+cave_sprite_func.h = $(srcdir)generated/cave_sprite_func.h
+psikyo_tile_func.h = $(srcdir)generated/psikyo_tile_func.h
+build_details.h = $(srcdir)generated/build_details.h
+
+allobj	= $(a68k.o) $(objdir)cpu/m68k/m68kcpu.o $(objdir)cpu/m68k/m68kopnz.o $(objdir)cpu/m68k/m68kopdm.o $(objdir)cpu/m68k/m68kopac.o $(objdir)cpu/m68k/m68kops.o $(dozea.o) \
+	  $(foreach file,$(autobj:.o=.c), \
+		$(foreach dir,$(alldir),$(subst $(srcdir),$(objdir), \
+		$(firstword $(subst .c,.o,$(wildcard $(srcdir)$(dir)/$(file))))))) \
+	  $(foreach file,$(autobj:.o=.cpp), \
+		$(foreach dir,$(alldir),$(subst $(srcdir),$(objdir), \
+		$(firstword $(subst .cpp,.o,$(wildcard $(srcdir)$(dir)/$(file))))))) \
+	  $(foreach file,$(autobj:.o=.asm), \
+		$(foreach dir,$(alldir),$(subst $(srcdir),$(objdir), \
+		$(firstword $(subst .asm,.o,$(wildcard $(srcdir)$(dir)/$(file))))))) \
+	  $(foreach file,$(autobj:.o=.rc), \
+		$(foreach dir,$(alldir),$(subst $(srcdir),$(objdir), \
+		$(firstword $(subst .rc,.o,$(wildcard $(srcdir)$(dir)/$(file)))))))
+
+alldep	= $(foreach file,$(autobj:.o=.c), \
+		$(foreach dir,$(alldir),$(subst $(srcdir),$(objdir), \
+		$(firstword $(subst .c,.d,$(wildcard $(srcdir)$(dir)/$(file))))))) \
+	  $(foreach file,$(autobj:.o=.cpp), \
+		$(foreach dir,$(alldir),$(subst $(srcdir),$(objdir), \
+		$(firstword $(subst .cpp,.d,$(wildcard $(srcdir)$(dir)/$(file))))))) \
+	  $(foreach file,$(autobj:.o=.rc), \
+		$(foreach dir,$(alldir),$(subst $(srcdir),$(objdir), \
+		$(firstword $(subst .rc,.d,$(wildcard $(srcdir)$(dir)/$(file)))))))
+
+#
+#
+#	Specify compiler/linker/assembler
+#
+#
+
+CC	= gcc
+CXX	= g++
+LD	= $(CXX)
+AS	= nasm
+
+CFLAGS	 = -pipe \
+	   -std=gnu99 -march=$(CPUTYPE) -O3 \
+	   -mno-cygwin -mwindows \
+	   -fforce-mem -fforce-addr -finline-limit=1200 -fthread-jumps \
+	   -freduce-all-givs -fmove-all-movables -fexpensive-optimizations \
+	   -Wall -Wno-long-long -Wno-sign-compare -Wno-uninitialized -Wno-unused \
+	   $(DEF) $(incdir) # `sdl-config --cflags`
+
+CXXFLAGS = -pipe \
+	   -march=$(CPUTYPE) -O3 \
+	   -mno-cygwin -mwindows \
+	   -fforce-mem -fforce-addr -finline-limit=1200 -fthread-jumps \
+	   -freduce-all-givs -fmove-all-movables -fexpensive-optimizations \
+	   -Wall -W -pedantic -Wshadow -Wno-long-long -Wmissing-prototypes \
+	   -Wstrict-prototypes -Wunknown-pragmas -Wundef -Wconversion \
+	   -Wuninitialized -Wpointer-arith -Winline \
+	   $(DEF) $(incdir) # `sdl-config --cflags`
+
+LDFLAGS	= -static
+
+ASFLAGS	=  -O1 -f coff
+
+#       D3DUtils & D3DMath need these
+#       DEF     = -Dsinf=\(float\)sin -Dcosf=\(float\)cos -Dasinf=\(float\)asin -Dacosf=\(float\)acos -Dsqrtf=\(float\)sqrt
+
+	DEF	:= -DBUILD_WIN32 -DUSE_SPEEDHACKS -DFILENAME=$(NAME) -DMMX
+
+ifdef UNICODE
+	DEF	:= $(DEF) -D_UNICODE
+endif
+
+ifdef SPECIALBUILD
+	DEF	:= $(DEF) -DSPECIALBUILD=$(SPECIALBUILD)
+endif
+
+ifdef FASTCALL
+	DEF	:= $(DEF) -DFASTCALL
+endif
+
+ifdef DEBUG
+	CFLAGS  += -mconsole
+	DEF	:= $(DEF) -DFBA_DEBUG
+endif
+
+ifdef ROM_VERIFY
+	DEF	:= $(DEF) -DROM_VERIFY
+endif
+
+ifdef	SYMBOL
+
+	CFLAGS  += -ggdb3
+	ASFLAGS += -g
+	DEF	:= $(DEF) -D_DEBUG
+
+ifdef PROFILE
+	CFLAGS	 += -pg
+	CXXFLAGS += -pg
+else
+	CFLAGS	 += -fomit-frame-pointer
+	CXXFLAGS += -fomit-frame-pointer
+endif
+
+else
+	LDFLAGS	 += -s
+endif
+
+ifdef MMX
+	CFLAGS	 += -mmmx
+	CXXFLAGS += -mmmx
+endif
+
+#
+#
+#	Specify paths
+#
+#
+
+vpath %.asm	$(foreach dir,$(alldir),$(srcdir)$(dir)/ )
+vpath %.cpp	$(foreach dir,$(alldir),$(srcdir)$(dir)/ )
+vpath %.c	$(foreach dir,$(alldir),$(srcdir)$(dir)/ )
+vpath %.h	$(foreach dir,$(alldir),$(srcdir)$(dir)/ )
+vpath %.rc	$(foreach dir,$(alldir),$(srcdir)$(dir)/ )
+
+vpath %.o 	$(foreach dir,$(alldir),$(objdir)$(dir)/ )
+vpath %.d 	$(foreach dir,$(alldir),$(objdir)$(dir)/ )
+
+#
+#
+#	Rules
+#
+#
+
+.PHONY:	all init cleandep touch clean
+
+ifeq ($(MAKELEVEL),1)
+ifdef DEPEND
+
+all:	init $(autdep) $(autobj)
+	@$(MAKE) -f makefile.mingw -s
+
+else
+
+all:	init $(autobj)
+	@$(MAKE) -f makefile.mingw -s
+endif
+else
+
+all:	$(NAME).exe
+
+endif
+
+#
+#
+#	Rule for linking the executable
+#
+#
+
+ifeq ($(MAKELEVEL),2)
+
+$(NAME).exe:	$(allobj)
+	@echo
+	@echo Linking executable... $(NAME).exe
+	@$(LD) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(lib)
+
+ifdef	DEBUG
+
+#	Don't compress when making a debug build
+
+else
+ifdef	COMPRESS
+	@upx --best $@
+endif
+endif
+endif
+
+ifeq ($(MAKELEVEL),1)
+ifdef FORCE_UPDATE
+$(build_details.h): FORCE
+endif
+endif
+
+#
+#	Generate the gamelist
+#
+
+burn.o burn.d:	driverlist.h
+
+$(driverlist.h): $(drvobj) $(srcdir)scripts/gamelist.pl
+ifdef	PERL
+	@$(srcdir)scripts/gamelist.pl -o $@ -l gamelist.txt \
+		$(filter %.cpp,$(foreach file,$(drvobj:.o=.cpp),$(foreach dir,$(alldir), \
+		$(firstword $(wildcard $(srcdir)$(dir)/$(file))))))
+else
+ifeq ($(MAKELEVEL),2)
+	@echo
+	@echo Warning: Perl is not available on this system.
+	@echo $@ cannot be updated or created!
+	@echo
+endif
+endif
+
+#
+#	Fix the .rc file
+#
+
+resource.o resource.d:	$(app_gnuc.rc) string.rc version.rc version.h $(build_details.h)
+
+$(license.rtf): $(srcdir)license.txt $(srcdir)scripts/license2rtf.pl
+
+ifdef	PERL
+	@$(srcdir)scripts/license2rtf.pl $< -o $(srcdir)generated/$(@F:.rc=.rtf)
+else
+ifeq ($(MAKELEVEL),2)
+	@echo
+	@echo Warning: Perl is not available on this system.
+	@echo $@ cannot be updated or created!
+	@echo
+endif
+endif
+
+$(app_gnuc.rc): app.rc $(license.rc) $(license.rtf) $(srcdir)scripts/fixrc.pl $(srcdir)burner/win32/resource/fba.ico $(srcdir)burner/win32/resource/about.bmp $(srcdir)burner/win32/resource/preview.bmp $(srcdir)burner/win32/resource/misc.bmp
+
+ifdef	PERL
+	@$(srcdir)scripts/fixrc.pl $< -o $@
+else
+ifeq ($(MAKELEVEL),2)
+	@echo
+	@echo Warning: Perl is not available on this system.
+	@echo $@ cannot be updated or created!
+	@echo
+endif
+endif
+
+#
+#	Generate some info on the build details
+#
+
+about.o about.d: $(build_details.h)
+
+$(build_details.h):	$(srcdir)scripts/build_details.cpp
+	@$(CXX) -mconsole $(CXXFLAGS) $(LDFLAGS) $< -o $(objdir)generated/build_details.exe
+	@$(objdir)generated/build_details.exe >$@
+
+#
+#	Compile 68000 cores
+#
+
+# A68K
+
+$(a68k.o):	fba_make68k.c
+	@echo Compiling A68K MC68000 core...
+	@$(CC) -mconsole $(CFLAGS) $(LDFLAGS) -DWIN32 -Wno-unused -Wno-conversion -Wno-missing-prototypes \
+		-s $< -o $(subst $(srcdir),$(objdir),$(<D))/$(<F:.c=.exe)
+	@$(subst $(srcdir),$(objdir),$(<D))/$(<F:.c=.exe) $(@:.o=.asm) \
+		$(@D)/a68k_tab.asm 00 $(ppro)
+	@echo Assembling A68K MC68000 core...
+	@$(AS) $(ASFLAGS) $(@:.o=.asm) -o $@
+
+# Musashi
+
+$(objdir)cpu/m68k/m68kcpu.o: $(srcdir)cpu/m68k/m68kcpu.c $(objdir)generated/m68kops.h $(srcdir)cpu/m68k/m68k.h $(srcdir)cpu/m68k/m68kconf.h
+	@echo Compiling Musashi MC680x0 core \(m68kcpu.c\)...
+	@$(CC) $(CFLAGS) -c $(srcdir)cpu/m68k/m68kcpu.c -o $(objdir)cpu/m68k/m68kcpu.o
+
+$(objdir)cpu/m68k/m68kops.o: $(objdir)cpu/m68k/m68kmake.exe $(objdir)generated/m68kops.h $(objdir)generated/m68kops.c $(srcdir)cpu/m68k/m68k.h $(srcdir)cpu/m68k/m68kconf.h
+	@echo Compiling Musashi MC680x0 core \(m68kops.c\)...
+	@$(CC) $(CFLAGS) -c $(objdir)generated/m68kops.c -o $(objdir)cpu/m68k/m68kops.o
+
+$(objdir)cpu/m68k/m68kopac.o: $(objdir)cpu/m68k/m68kmake.exe $(objdir)generated/m68kops.h $(objdir)generated/m68kopac.c $(srcdir)cpu/m68k/m68k.h $(srcdir)cpu/m68k/m68kconf.h
+	@echo Compiling Musashi MC680x0 core \(m68kopac.c\)...
+	@$(CC) $(CFLAGS) -c $(objdir)generated/m68kopac.c -o $(objdir)cpu/m68k/m68kopac.o
+
+$(objdir)cpu/m68k/m68kopdm.o: $(objdir)cpu/m68k/m68kmake.exe $(objdir)generated/m68kops.h $(objdir)generated/m68kopdm.c $(srcdir)cpu/m68k/m68k.h $(srcdir)cpu/m68k/m68kconf.h
+	@echo Compiling Musashi MC680x0 core \(m68kopdm.c\)...
+	@$(CC) $(CFLAGS) -c $(objdir)generated/m68kopdm.c -o $(objdir)cpu/m68k/m68kopdm.o
+
+$(objdir)cpu/m68k/m68kopnz.o: $(objdir)cpu/m68k/m68kmake.exe $(objdir)generated/m68kops.h $(objdir)generated/m68kopnz.c $(srcdir)cpu/m68k/m68k.h $(srcdir)cpu/m68k/m68kconf.h
+	@echo Compiling Musashi MC680x0 core \(m68kopnz.c\)...
+	@$(CC) $(CFLAGS) -c $(objdir)generated/m68kopnz.c -o $(objdir)cpu/m68k/m68kopnz.o
+
+$(objdir)generated/m68kops.h: $(objdir)cpu/m68k/m68kmake.exe $(srcdir)cpu/m68k/m68k_in.c
+	$(objdir)/cpu/m68k/m68kmake $(objdir)generated/ $(srcdir)cpu/m68k/m68k_in.c
+
+$(objdir)cpu/m68k/m68kmake.exe: $(srcdir)cpu/m68k/m68kmake.c
+	@echo Compiling Musashi MC680x0 core \(m68kmake.c\)...
+	@$(CC) $(CFLAGS) $(srcdir)cpu/m68k/m68kmake.c -o $(objdir)cpu/m68k/m68kmake.exe
+
+
+#
+#	Compile Z80 core
+#
+
+$(dozea.o):	dam.cpp dama.cpp damc.cpp dame.cpp damf.cpp damj.cpp damm.cpp damo.cpp damt.cpp dam.h
+	@echo Compiling Doze Z80 core sourcefiles...
+	@$(CXX) -mconsole $(CXXFLAGS) $(LDFLAGS) $(filter %.cpp,$^) \
+		-o $(subst $(srcdir),$(objdir),$(<D))/$(<F:.cpp=.exe)
+	@$(subst $(srcdir),$(objdir),$(<D))/$(<F:.cpp=.exe) $(@:.o=.asm)
+	@echo Assembling Z80 core...
+	@$(AS) $(ASFLAGS) $(@:.o=.asm) -o $@
+
+#
+#	Extra rules for generated header file cvt.h, needed by ctv.cpp
+#
+
+ctv.d ctv.o:	$(ctv.h)
+
+$(ctv.h):	ctv_make.cpp
+	@echo Generating $(srcdir)generated/$(@F)...
+	@$(CC) -mconsole $(CXXFLAGS) $(LDFLAGS) $< \
+		-o $(subst $(srcdir),$(objdir),$(<D))/$(<F:.cpp=.exe)
+	@$(subst $(srcdir),$(objdir),$(<D))/$(<F:.cpp=.exe) >$@
+
+#
+#	Extra rules for generated header file toa_gp9001_func.h, needed by toa_gp9001.cpp
+#
+
+toa_gp9001.d toa_gp9001.o: $(toa_gp9001_func.h)
+
+$(toa_gp9001_func.h):	$(srcdir)scripts/toa_gp9001_func.pl
+	@$(srcdir)scripts/toa_gp9001_func.pl -o $(toa_gp9001_func.h)
+
+#
+#	Extra rules for generated header file neo_sprite_func.h, needed by neo_sprite.cpp
+#
+
+neo_sprite.d neo_sprite.o: $(neo_sprite_func.h)
+
+$(neo_sprite_func.h):	$(srcdir)scripts/neo_sprite_func.pl
+	@$(srcdir)scripts/neo_sprite_func.pl -o $(neo_sprite_func.h)
+
+#
+#	Extra rules for generated header file cave_tile_func.h, needed by cave_tile.cpp
+#
+
+cave_tile.d cave_tile.o: $(cave_tile_func.h)
+
+$(cave_tile_func.h):	$(srcdir)scripts/cave_tile_func.pl
+	@$(srcdir)scripts/cave_tile_func.pl -o $(cave_tile_func.h)
+
+#
+#	Extra rules for generated header file cave_sprite_func.h, needed by cave_sprite.cpp
+#
+
+cave_sprite.d cave_sprite.o: $(cave_sprite_func.h)
+
+$(cave_sprite_func.h):	$(srcdir)scripts/cave_sprite_func.pl
+	@$(srcdir)scripts/cave_sprite_func.pl -o $(cave_sprite_func.h)
+
+#
+#	Extra rules for generated header file psikyo_tile_func.h / psikyo_sprite_func.h, needed by psikyo_tile.cpp / psikyo_sprite.cpp
+#
+
+psikyo_tile.d psikyo_tile.o psikyosprite.d psikyo_sprite.o: $(psikyo_tile_func.h)
+
+$(psikyo_tile_func.h):	$(srcdir)scripts/psikyo_tile_func.pl
+	$(srcdir)scripts/psikyo_tile_func.pl -o $(psikyo_tile_func.h)
+
+ifeq ($(MAKELEVEL),2)
+ifdef DEPEND
+
+include	$(alldep)
+
+endif
+endif
+
+#
+#	Generic rule for resource files
+#
+
+%.o:	%.rc
+	@echo Compiling resource file $(<F)...
+	@windres $(DEF) $< -o $(subst $(srcdir),$(objdir),$(<D))/$(@F) $(foreach dir,$(alldir),--include-dir $(srcdir)$(dir))
+
+#
+#	Generic rules for C/C++ files
+#
+
+ifeq ($(MAKELEVEL),1)
+
+%.o:	%.cpp
+	@echo Compiling $<...
+	@$(CC) $(CXXFLAGS) -c $< -o $(subst $(srcdir),$(objdir),$(<D))/$(@F)
+
+%.o:	%.c
+	@echo Compiling $<...
+	@$(CC) $(CFLAGS) -c $< -o $(subst $(srcdir),$(objdir),$(<D))/$(@F)
+
+%.o:	%.asm
+	@echo Assembling $<...
+	@$(AS) $(ASFLAGS) $< -o $(subst $(srcdir),$(objdir),$(<D))/$(@F)
+
+else
+
+%.o:	%.c
+	@echo Compiling $<...
+	@$(CC) $(CFLAGS) -c $< -o $@
+
+%.o:	%.asm
+	@echo Assembling $<...
+	@$(AS) $(ASFLAGS) $< -o $@
+
+%.o:
+	@echo Compiling $<...
+	@$(CC) $(CXXFLAGS) -c $< -o $@
+
+endif
+
+#
+#	Generate dependencies for C/C++ files
+#
+
+ifdef DEPEND
+
+%.d:	%.c
+	@echo Generating depend file for $<...
+	@$(CC) -MM -MT "$(subst $(srcdir),$(objdir),$(<D))/$(*F).o $(subst $(srcdir),$(objdir),$(<D))/$(@F)" -x c++ $(CXXFLAGS) $< >$(subst $(srcdir),$(objdir),$(<D))/$(@F)
+
+%.d:	%.cpp
+	@echo Generating depend file for $<...
+	@$(CC) -MM -MT "$(subst $(srcdir),$(objdir),$(<D))/$(*F).o $(subst $(srcdir),$(objdir),$(<D))/$(@F)" -x c++ $(CXXFLAGS) $< >$(subst $(srcdir),$(objdir),$(<D))/$(@F)
+
+%.d:	%.rc
+	@echo Generating depend file for $<...
+	@$(CC) -MM -MT "$(subst $(srcdir),$(objdir),$(<D))/$(*F).o $(subst $(srcdir),$(objdir),$(<D))/$(@F)" -x c++ $(CXXFLAGS) $< >$(subst $(srcdir),$(objdir),$(<D))/$(@F)
+
+endif
+
+#
+#	Phony targets
+#
+
+init:
+
+ifdef	DEBUG
+	@echo Making debug build...
+else
+	@echo Making normal build...
+endif
+	@echo
+	@mkdir -p $(foreach dir, $(alldir),$(objdir)$(dir))
+	@mkdir -p $(srcdir)generated
+
+cleandep:
+	@echo Removing depend files from $(objdir)...
+	-@for dir in $(alldir); do rm -f $(objdir)$$dir/*.d; done
+
+touch:
+	@echo Marking all targets for $(NAME) as uptodate...
+	-@touch $(NAME).exe
+	-@touch -c -r $(NAME).exe $(srcdir)/generated/*
+	-@for dir in $(alldir); do touch -c  -r $(NAME).exe $(objdir)$$dir/*; done
+
+clean:
+	@echo Removing all files from $(objdir)...
+	-@rm -f -r $(objdir)
+	-@rm -f -r $(ctv.h)
+
+ifdef	PERL
+	@echo Removing all files generated with perl scripts...
+	-@rm -f -r $(app_gnuc.rc) $(driverlist)
+endif
+
+
+#
+#	Rule to force recompilation of any target that depends on it
+#
+
+FORCE:

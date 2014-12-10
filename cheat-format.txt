@@ -1,0 +1,39 @@
+Below is a short description of the FB Alpha cheat file format. Cheat files
+must be placed in the cheats subdirectory, and named according to the sort
+name/name of the zip file containing the ROMs, with the extension being
+either .dat or .ini (e.g. 1941.zip becomes 1941.dat or 1941.ini). FBA will
+present a warning and some additional info whenever it encounters an error
+in a cheat file, and will stop processing the file at that point.
+
+
+Cheat file format
+-----------------
+
+// Text			// Comment
+
+include "filename"	// Include another cheat file
+
+cheat "cheatname" {	// New cheat called "cheatname" (the curly bracket is
+			// optional)
+
+    type n		// Specify cheat type (optional, defaults to 0)
+			// type 0 = apply each frame, save original value and
+			//	    remain active;
+			//      1 = one-shot, fire and forget;
+			//      2 = one-shot, save original value and remain
+			//	    active
+
+    default n		// Set default option to n (0 <= n <= 95)
+
+    0 "name"		// Text displayed in the cheat dialog when the cheat
+			// is disabled
+
+    n "name", o, p, q	// Add option n (1 <= n <= 95), called "name"
+                        // Store byte value q at address p in the address
+                        // space of CPU o
+                        // Only 68K CPUs are supported, you can specify upto
+                        // 32 o/p/q groups per option, all must be on the
+                        // same line.
+
+}			// Required if you used a curly bracket as above,
+			// considered an error otherwise

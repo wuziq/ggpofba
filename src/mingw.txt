@@ -1,0 +1,196 @@
+CONTENTS
+
+ 0 About this document
+ 1 Requirements for compiling
+ 2 Setting up MinGW
+ 3 Additional setup
+ 4 Setting up Perl
+ 5 Installing FBA
+ 6 Compiling FBA
+
+
+
+
+0 - ABOUT THIS DOCUMENT
+
+The information contained herein is just to get you started. It is not intended
+to be an exhaustive reference, but should contain enough information to allow
+you to set up your C/C++ programming environment and compile FB.
+
+
+
+
+1 - REQUIREMENTS FOR COMPILING
+
+Besides the FB sources, you require the following to compile them:
+
+ - MinGW;
+ - nasm;
+ - zlib for MinGW;
+ - libpng for MinGW;
+ - upx;
+ - DirectX headers and libraries for Cygwin/MinGW
+
+nasm and upx need to be in you path. The makefile assumes you're using
+the windows version of nasm (nasmw).
+
+Perl is optional, but is required when you:
+ - change the drivers;
+ - change the resource file
+
+Perl is not included with MinGW, you will need to set it up seperately.
+
+Perl is used to convert the .rc file into one that windres understands, and
+to dynamically generate the list of drivers which are used by the program (by
+scanning all of the driver sourcefiles and extracting the required
+information). The script which builds the list of drivers also builds a text
+file containing information about supported games.
+
+If you don't have perl, you need to edit src/generated/app_windres.rc and
+src/generated/driverlist.h by hand (both files are included in the source
+distribution). Keep in mind that both of these files will be overwritten when
+FBA is compiled on a system that does have Perl.
+
+
+
+2 - SETTING UP MINGW
+
+ - download and extract minGW (http://www.mingw.org - you will need GCC 3.3)
+   to the directory you want it to live in (you can use WinZip).
+
+ - download UnxUtils.zip (http://unxutils.sourceforge.net) and extract the
+   following files to the mingw/bin directory:
+
+	echo.exe, mkdir.exe, rm.exe, sh.exe and touch.exe.
+
+ - If you're running Windows 2000, do this to create a shortcut to MinGW:
+
+   - copy the "command prompt" shortcut;
+   - rename the shortcut to "MinGW";
+   - change the "Target" value from the property sheet to:
+     <%SystemRoot%\system32\cmd.exe /a /x /k c:\mingw\mingw.cmd>
+     (replace C:\mingw with the location of MinGW on your system);
+   - change the "Start in" value to the directory you wish MinGW to start in.
+   - create a mingw.cmd file in the MinGW root directory, and fill it with
+     this:
+
+     8<--------8<--------8<--------
+
+     @PATH=c:\mingw\bin;%PATH%
+     @prompt=MinGW$s$p$g
+
+     8<--------8<--------8<--------
+
+     (again, replace c:\mingw with the location of MinGW on your system).
+
+ - If you're running Windows 9x, do this to create a shortcut to MinGW;
+
+   - copy the "MS-DOS Prompt Shortcut";
+   - rename the shortcut to "MinGW";
+   - on the Program Tab in properties;
+ 	- change the Window Title to "MinGW";
+	- change the Working folder to your MinGW folder;
+	- enter "mingw.bat" in the batch file;
+   - create a text file called mingw.bat in the same folder as the shortcut
+     and fill it with this:
+
+     8<--------8<--------8<--------
+
+     @path=c:\mingw\bin;%path%
+     @prompt=MinGW$s$p$g
+     @doskey
+
+     8<--------8<--------8<--------
+
+     (replace, c:\mingw with the location of MinGW on your system).
+     (doskey is optional).
+
+ - If you don't make a shortcut then ensure that the mingw/bin directory is
+   included in your path.
+
+
+3 - ADDITIONAL SETUP
+
+ - Win32 API 3.1 (from the MinGW sourceforge downloads)
+
+ - ZLib 1.14 or 1.22 (http://caesar.logiqx.com/zips/tools/zip_libs/zlib/zlib114-mingw.zip)
+
+ - LibPNG (can be obtained from the FBA site)
+
+ - Nasm 0.98.38 (or higher, http://nasm.sourceforge.net/)
+
+ - UPX (http://upx.sourceforge.net/)
+
+ - DirectX 7 (http://caesar.logiqx.com/zips/tools/compilers/mingw/dx70_mgw.zip)
+
+ - For all of the above extract the .a files to the mingw/lib directory and
+   the .h files to the mingw/include directory.
+
+   Nasm and UPX need to be present in your path. FBA assumes your nasm
+   executable is named nasm.exe, if yours is nasmw.exe edit the makefile or
+   create a copy of nasm with the correct name.
+
+
+4 - SETTING UP PERL
+
+NsPerl is a console based port of Perl. It is a good complement to MinGW.
+To use it when building FBA do the following:
+
+ - Download nsPerl (can be found here: http://people.netscape.com/richm/nsPerl/)
+
+   - download and install nsPerl as described in the readme. (basically run a
+     script to make the nsperl.exe file)
+
+   - add the directory with nsperl.exe in it to the path. (you can add it to
+     the shortcut batch file above)
+
+   - associate .pl files with nsPerl:
+     - Open Windows Explorer, click View, Folder Options.
+     - Click on the File Types tab followed by clicking on New Type.
+     - Enter "Perl Script" as the description.
+     - Click New in the actions section.
+     - Type "open" in the Action box and click Browse and choose the
+       nsperl.exe.
+     - Click OK until you get back to Windows Explorer.
+
+
+
+
+5 - INSTALLING THE FBA SOURCES
+
+To install the FBA sources, simply unzip them to the directory where you want
+them to live.
+
+
+
+
+6 - COMPILING THE FBA SOURCES
+
+To compile the FBA sources, change to the root directory of FBA, one level
+below where this file is located, and type <make>. The executable will be
+also be placed in this directory, while all intermediate files are placed in
+the obj subdirectory.
+
+MinGW does not include a debugger, but one can be downloaded here:
+http://prdownloads.sourceforge.net/mingwrep/gdbm-1.8.0-20010430.zip
+The FB makefile generates debugging information by invoking it as follows:
+<make DEBUG=1>, or by uncommenting the declaration in the makefile. The
+default name of the debug version of the executable is fbad.exe.
+
+Normally, a Pentium Pro/Pentium II optimized version is built. you can
+override this by invoking make as follows: <make CPUTYPE=[cpu type]> or
+change the declaration in the makefile. Valid options are all legal values of
+the gcc -mcpu flag.
+
+The makefile also supports automatic generation of dependencies. Uncomment
+the DEPEND declaration in the makefile to enable it. Since the option causes
+all files that somehow include a changed header file to be recompiled, you
+may want to leave it off sometimes.
+
+For editing the sourcefiles, there are a number of free editors and IDE's
+designed for MinGW/cygwin available on the web. A good, free programming
+editor is available at http://www.praven3.com/credit/.
+
+
+
+END

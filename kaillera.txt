@@ -1,0 +1,130 @@
+Kaillera v0.84c (c) 2001 Christophe Thibault
+-------------
+http://www.kaillera.com/
+
+how to use it:
+--------------
+
+run mame32k.exe and select File->Play network game...
+also, it'd be somewhat convenient to have some roms in the "roms/" folder :)
+
+infos:
+------
+modem users will get some lag, although games are playable.
+
+otherwise, if you have a kaillera server nearby (i.e. <100ms ping), this should work like a charm.
+
+hints:
+------
+
+- analog input is NOT supported yet. so supersprint, etc... WON'T work.
+- exit the game by pressing the ESC key, not by closing the window. I don't know why, but
+  it seems to have a better behaviour for keeping your connection active or something.
+- some people reported that upgrading to the latest Internet Explorer version fixed some of 
+  their problems (creating new game, joining games, ...)
+- use the 'T' key while in game for text chat. use 'ESC' to cancel.
+
+thanks to:
+----------
+
+keops_eqx, ana|ogue, leviathan, smame, and all others for their support...
+
+what's new:
+-----------
+0.84c: - netsync should be more accurate now
+       - better fix for the bug below
+0.84b: - connecting to a LAN or local server should display a faster ping
+0.84a: - integrated new smame changes:
+         - All new stuff/bugfixes from stretchmame v0.37b15a
+         - Re-enabled DIP switches.
+         - Added reset machine/state saving with network game.
+         - Added input recording with network game.
+           (press Shift and Ctrl when you start a game)
+0.84: - 0.83 required windows98/2000. this one doesn't.
+      - non working MAME games are no more selectable in "create game" popup
+      - game list is now internally copied in kaillera DLL in kailleraSetInfos
+      - you can now request game infos by right clicking into the games list!
+        thanks to mame.dk :)
+      - fixed some little crash bugs.
+0.83: - plays "join.wav" when someone enters game.
+      - also, window explorer caption will "flash" when someone enters game.
+      - added message in chat window to notify when player drop out of a game.
+      - smame added a LOT of stuff into the mame version:
+        - Disabled DIP switches.
+        - Disabled state saving.
+        - Disabled Keyboard while chatting.
+        - Removed '3/4 Players for Kaillera' version.
+          Instead of them, regular version setting is changed to 3/4 players with network game.
+        - Added new Kaillera chat feature with IME support.
+        - Customizable chat button. Default key is 'T'.
+        - 'Y' moves chat message from the bottom to the top of the screen, or vice versa.
+          This feature is fullscreen GDI chat mode only.
+        - Added NEOGEO Test Switch support.
+        - Fixed the NEOGEO desync problem
+      - yay!
+0.81: - fixed buggy keystroke handling. now every keys are sent to the server.
+      - magically reduced ping time :)
+0.8:  - added connection type setting.
+      - keys are no more sent 60 times a second if you're not on LAN, this should
+        improve game smoothness a LOT.
+      - fixed some server list bugs
+      - "Refresh list" button now switches between "Refresh" and "Stop"
+      - added a "*Chat" game so you can have private chats (thanks to smame)
+      - in-game chat (use the 'T' key)! (thanks to japmame)
+      - added support for IP_ACTIVE_LOW(e.g.Salamander) 
+        and Dual-Sticks(e.g. Karate Champ) Games (thanks to mame32jk)
+0.72: - current games list now sorted by status
+      - improved the API for more flexability
+      - now compiled against mame v0.37b14
+      - smame added some neat improvements in mame32 such as:
+        - Disabled startup information, warnings, and copyright with network game.
+        - Disabled auto pause with network game.
+      - superpimped install!
+0.71: - fixed input bug in some games
+0.7:  - server list is now resizable!
+      - modified API for more flexability.
+      - better and faster network code!
+      - every player now uses player 1 controls!
+      - you can now play along with players using a different emulator version.
+      - added version number on server list.
+      - added little dialog icon.
+      - NOT updated to MAME32 "retail" source code as it seems to be fucked up on
+        some games. So, kof99p is still crashing in this release :(
+0.61: - fixed MAME32 crash bug on some games (especially CPS2 games).
+      - changed text in netsync dialog to be more meaningful.
+      - fixed bug in server list get process.
+0.6:  - fixed desynch bug. yes. really. (be sure to use a mame32 compiled with kaillera 0.6,
+        do not just copy the DLL otherwise it won't work properly)
+      - netsync timeout upped to 2 minutes
+      - netsync dialog box now shows up in fullscreen mode!
+      - last mame32 build was very bugged. this one is much better.
+      - MAME32 now compiled with Stretch support (from StretchMame project)
+      - MAME32 name set to "mame32k" so mame32k.exe will use different registry entries than 
+        your original MAME32.exe
+      - MAME32k.exe now packed -> smaller distribution size
+0.5:  - desynch problem fixed! yay!
+      - game list when creating a new game is now always correctly sorted
+      - active games list now properly updated
+      - "manual server ip enter bug" fixed
+0.41: - fixed stupid maximum network message length
+0.4:  - fixed buggy # of users in chat window
+      - netsync doesn't screw up kaillera windows anymore
+      - players/games lists are now sorted and sortable
+      - better network code, games should be noticably smoother
+      - server list window remains open when connected to a server. much better
+        for server hoping
+      - added nifty netsync dialog box (that you can only see in windowed mode though)
+0.3:  updated to mame32b12
+      added game chat
+      player kick works
+      added net sync code at game start. games should start in a better way.
+      lots of GUI fixes/improvements
+0.23: pings added in server list
+      double click in server list launch connect dialog
+      added sorting in server list
+0.2:  blank username fixed
+      added "Location" info in server list
+      "create game" -> games are now ordered by first letter
+      some improvements
+      LOT of bugfixes
+0.1:  initial release

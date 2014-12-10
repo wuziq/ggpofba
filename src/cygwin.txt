@@ -1,0 +1,147 @@
+CONTENTS
+
+ 0 About this document
+ 1 Requirements for compiling
+ 2 Setting up Cygwin
+ 3 Additional setup
+ 4 Installing the FBA sources
+ 5 Compiling FBA
+
+
+
+
+0 - ABOUT THIS DOCUMENT
+
+The information contained herein is just to get you started. It is not intended
+to be an exhaustive reference, but should contain enough information to allow
+you to set up your C/C++ programming environment and compile FBA.
+
+
+
+
+1 - REQUIREMENTS FOR COMPILING
+
+Besides the FBA sources, you require the following to compile them:
+
+ - Cygwin;
+ - libpng for MinGW;
+ - DirectX headers and libraries for Cygwin/MinGW
+
+Perl is optional, but is required when you:
+ - change the drivers;
+ - change the resource file
+
+Perl is included with Cygwin, and no additional Cygwin setup is necessary.
+
+Perl is used to convert the .rc file into one that windres understands, and to
+dynamically generate the list of drivers which are used by the program (by
+scanning all of the driver sourcefiles and extracting the required information).
+The script which builds the list of drivers also builds a text file containing
+information about supported games.
+
+If you don't have perl, you need to edit src/generated/app_windres.rc and
+src/generated/driverlist.h by hand (both files are included in the source
+distribution). Keep in mind that both of these files will be overwritten when
+FBA is compiled on a system that does have Perl.
+
+
+
+
+2 - SETTING UP CYGWIN
+
+You can download and install cygwin as usual, from http://www.cygwin.com/
+(you need at least the defaults, plus the devel group, plus perl from the
+interpretors group, plus upx from the utils group, plus the mingw group). See
+the Cygwin site for FAQs and the Cygwin user manuel. FBA works with either Unix
+or DOS style linefeeds.
+
+
+
+
+3 - ADDITIONAL SETUP
+
+The version of libpng that comes with Cygwin are specific to Cygwin, that is,
+you must install the MinGW version in a location searched only when the
+-mno-cygwin flag is in effect. Place the .a files in /lib/mingw, and the .h
+files in /usr/include/mingw. The procedure for DirectX headers and libraries is
+similar; the .a files can be copied to /lib/w32api and the .h, .inc, .inl,
+and .x files to /usr/include/w32api.
+
+ - A set of DirectX headers and libraries can be downloaded from
+   http://caesar.logiqx.com/zips/tools/compilers/mingw/dx70_mgw.zip
+ - A version of libpng compiled for MinGW can be downloaded from
+   the FBA website.
+
+
+
+
+4 - INSTALLING THE FBA SOURCES
+
+To install the FBA sources, simply unzip them to the directory where you want
+them to live.
+
+You can use the command: <mount -f -b c:\\fba /fba> (replace c:\\fba with the
+location of FBA on your system, keep in mind to double any backslashes)
+to add the FBA directory to the Cygwin filesystem.
+
+
+
+
+5 - COMPILING THE FBA SOURCES
+
+To compile the FBA sources, change to the root directory of FBA, one level below
+where this file is located, and type <make> (do this from a Cygwin command
+prompt, or make sure your cygwin\bin directory is in your path). The executable
+will be also be placed in this directory, while all intermediate files are
+placed in the obj subdirectory.
+
+Cygwin includes a debugger, and the FBA makefile generates debugging information
+by invoking it as follows: <make DEBUG=1>, or by uncommenting the declaration in
+the makefile. The default name of the debug version of the executable is
+fbad.exe.
+
+Normally, a Pentium Pro/Pentium II optimized version is built. you can override
+this by invoking make as follows: <make CPUTYPE=[cpu type]> or change the
+declaration in the makefile. Valid options are all legal values of the
+gcc -mcpu flag.
+
+The makefile also supports automatic generation of dependencies. Uncomment the
+DEPEND declaration in the makefile to enable it. Since the option causes all
+files that somehow include a changed header file to be recompiled, you may want
+to leave it off sometimes.
+
+For editing the sourcefiles, there are a number of free editors and IDE's
+designed for MinGW/cygwin available on the web. A good, free programming editor
+is available at http://www.praven3.com/credit/. If you wish to use Cygwin and a
+normal Windows editor, you will need to set up a pair of shell scripts to be
+able to build FBA from within the editor:
+
+ - create an fba_make.cmd file in the FBA directory, and fill it with this:
+
+   8<--------8<--------8<--------
+
+   @echo off
+   c:\cygwin\bin\sh -c ./fba_make.sh
+
+   8<--------8<--------8<--------
+
+   (replace c:\cygwin with the root directory of Cygwin on your system).
+
+ - create an fba_make.sh file in the FBA directory, and fill it with this:
+
+   8<--------8<--------8<--------
+
+   #!/bin/sh
+
+   export PATH="/bin:${PATH}"
+   make
+
+   8<--------8<--------8<--------
+
+Make certain you set the project root directory to your FBA directory, and
+let it execute fba_make.cmd to build FBA.
+
+
+
+
+END
