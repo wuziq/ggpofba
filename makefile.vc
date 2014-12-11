@@ -4,7 +4,7 @@
 # any targets, if necessary. (Intermediary) targets which have their own unique rules
 # are generated as required.
 
-REM MAKEOS = cygwin
+MAKEOS = cygwin
 ifeq ($(MAKEOS),)
 MAKEOS = $(OSTYPE)
 endif

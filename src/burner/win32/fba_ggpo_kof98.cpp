@@ -260,12 +260,12 @@ CharSelectTimeCountdown(QuarkSprite sprites[], int count)
    };
    int c = 0;
    for (int i = 0; i < count; i++) {
-      for (int j = 0; j < ARRAYSIZE(matches); j++) {
+      for (int j = 0; j < _ARRAYSIZE(matches); j++) {
          if (sprites[i].x == matches[j].x &&
              sprites[i].y == matches[j].y &&
              sprites[i].id == matches[j].id) {
             c++;
-            if (c == ARRAYSIZE(matches)) {
+            if (c == _ARRAYSIZE(matches)) {
                return true;
             }
          }

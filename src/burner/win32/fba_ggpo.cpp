@@ -159,7 +159,7 @@ ggpo_advance_frame_callback(int flags)
 void
 QuarkProcessEndOfFrame()
 {
-   ggpo_client_set_game_event(ggpo, GGPOCLIENT_GAMEEVENT_STARTING, game);
+   ggpo_client_set_game_event(ggpo, GGPOCLIENT_GAMEEVENT_STARTING, gGameName);
 }
 
 bool __cdecl
@@ -438,7 +438,7 @@ QuarkIncrementFrame()
 
    if (!bReplaySupport && !bReplayStarted) {
       bReplayStarted = true;
-      ggpo_client_set_game_event(ggpo, GGPOCLIENT_GAMEEVENT_STARTING, game);
+      ggpo_client_set_game_event(ggpo, GGPOCLIENT_GAMEEVENT_STARTING, gGameName);
    }
 
 #if 0

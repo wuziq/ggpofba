@@ -107,7 +107,7 @@ QuarkProcessVSAVSprites(GGPOSession *ggpo, QuarkSprite sprites[], int count)
       * Identify the players...
       */
       if (!GameInfo.p[0].id || !GameInfo.p[1].id) {
-         for (int j = 0; j < ARRAYSIZE(search); j++) {
+         for (int j = 0; j < _ARRAYSIZE(search); j++) {
             for (int k = 0; k < count; k++) {
                if (sprites[k].id == search[j].id && sprites[k].y == 24) {
                   if (sprites[k].x < 160) {

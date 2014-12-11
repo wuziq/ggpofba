@@ -166,7 +166,7 @@ QuarkProcessSFA2Sprites(GGPOSession *ggpo, QuarkSprite sprites[], int count)
       */
       for (int i = 0; i < 2; i++) {
          if (!GameInfo.p[i].id) {
-            for (int j = 0; j < ARRAYSIZE(search); j++) {
+            for (int j = 0; j < _ARRAYSIZE(search); j++) {
                QuarkSpriteInfo s = { search[j].p[i], nameplatePositions[i].x, nameplatePositions[i].y };
                if (SpriteInList(&s, sprites, count)) {
                   GameInfo.p[i].id = search[j].character;

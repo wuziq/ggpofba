@@ -160,7 +160,7 @@ QuarkProcessMVSCSprites(GGPOSession *ggpo, QuarkSprite sprites[], int count)
       for (int i = 0; i < 2; i++) {
          for (int j = 0; j < 2; j++) {
             if (!GameInfo.p[i].c[j]) {
-               for (int k = 0; k < ARRAYSIZE(search); k++) {
+               for (int k = 0; k < _ARRAYSIZE(search); k++) {
                   for (int l = 0; l < count; l++) {
                      if (sprites[l].id == search[k].id) {
                         if (i == 0 && j == 0 && sprites[l].x == 40 && sprites[l].y == 14) {
