@@ -3,7 +3,7 @@
 These instructions are derived from vctoolkit.txt under `src`.
 
 ### Prerequisites
-* Windows (I've tested on XP and 7)
+* Windows (I've tested on 32-bit XP and 7)
 * [cygwin](https://www.cygwin.com/)
 * [DirectX SDK (August 2007)](http://www.microsoft.com/en-us/download/confirmation.aspx?id=13287)
 * [Microsoft Platform SDK](http://www.microsoft.com/en-us/download/details.aspx?id=6510)
@@ -19,7 +19,7 @@ These instructions are derived from vctoolkit.txt under `src`.
   * Copy it to `%VCToolkitInstallDir%\bin\`
 3.  Add `C:\cygwin\bin` to your PATH.
 4.  Open up a regular command prompt and navigate to wherever you've cloned the source.
-5.  Run `environment.bat`, which will set up some environment variables for your current session.
+5.  Run either `environment-32.bat` or `environment-64.bat`, depending on whether your system is 32 or 64-bit.  This script which will set up some environment variables for your current session.
 6.  Execute `make vc`
 
 You should have an **fbaa.exe** when it's all done.
